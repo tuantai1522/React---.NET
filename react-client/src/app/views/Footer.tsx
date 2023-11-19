@@ -1,10 +1,22 @@
-import Typography from "@mui/material/Typography";
+import { Typography } from "@mui/material";
 
-const Footer = () => {
+interface Props {
+  darkMode: boolean;
+  changeTheme: () => void;
+}
+
+const Footer = ({ darkMode, changeTheme }: Props) => {
   return (
-    <Typography variant="h2" sx={{ mt: 5, bgcolor: "#d3d3d3" }}>
-      Bằng Tuấn Tài
-    </Typography>
+    <>
+      <Typography
+        variant="h2"
+        sx={{
+          backgroundColor: darkMode === false ? "#1976d2" : "#282424",
+        }}
+      >
+        Bằng Tuấn Tài {darkMode}
+      </Typography>
+    </>
   );
 };
 

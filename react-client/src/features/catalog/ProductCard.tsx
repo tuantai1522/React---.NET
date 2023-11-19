@@ -7,7 +7,9 @@ import {
   Card,
   CardHeader,
   Avatar,
+  Link,
 } from "@mui/material";
+
 import { Product } from "../../app/models/product";
 
 // to define all properties or methods passed from father's component
@@ -50,7 +52,11 @@ const ProductCard = ({ product }: Props) => {
         </CardContent>
         <CardActions>
           <Button size="small">Add to cart</Button>
-          <Button size="small">View</Button>
+          <Button size="small">
+            <Link href={`/catalog/${product.productId}`} underline="none">
+              View
+            </Link>
+          </Button>
         </CardActions>
       </Card>
     </>

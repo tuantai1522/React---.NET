@@ -1,5 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
-import Catalog from "../../features/catalog/Catalog";
+
+import { Outlet, Link } from "react-router-dom";
+
 import Header from "./Header";
 
 import { CssBaseline, Container } from "@mui/material";
@@ -29,10 +31,10 @@ const App = () => {
       <CssBaseline />
 
       <Header darkMode={darkMode} changeTheme={changeTheme} />
-      <Container>
-        <Catalog />
+      <Container sx={{ mt: 5, mb: 5 }}>
+        <Outlet />
       </Container>
-      <Footer />
+      <Footer darkMode={darkMode} changeTheme={changeTheme} />
     </ThemeProvider>
   );
 };
