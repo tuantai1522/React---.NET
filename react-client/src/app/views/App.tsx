@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@emotion/react";
 
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import Header from "./Header";
 
@@ -8,6 +8,10 @@ import { CssBaseline, Container } from "@mui/material";
 import { createTheme } from "@mui/material";
 import { useState } from "react";
 import Footer from "./Footer";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const palette = darkMode ? "dark" : "light";
@@ -28,6 +32,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
 
       <Header darkMode={darkMode} changeTheme={changeTheme} />

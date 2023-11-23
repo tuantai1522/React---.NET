@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
-import axios from "axios";
+import agent from "../../app/api/agent";
+import LoadingComponent from "../../app/views/LoadingComponent";
+import NotFound from "../../app/errors/NotFound";
 
 const ProductDetails = () => {
   const [product, setProduct] = useState<Product | null>(null);
@@ -24,18 +26,16 @@ const ProductDetails = () => {
 
   //được gọi khi component được mount (xuất hiện trên màn hình) chứ ko gọi khi bị re-render
   useEffect(() => {
-    axios
-      .get(`http://localhost:5062/api/product/${productID}`)
-      .then((response) => setProduct(response.data))
-      .finally(() => setLoading(false));
+    productID &&
+      agent.Catalog.details(parseInt(productID))
+        .then((product) => setProduct(product))
+        .catch((err) => console.log(err))
+        .finally(() => setLoading(false));
   }, [productID]);
+  if (loading) return <LoadingComponent />;
 
-  if (loading)
-    return (
-      <Typography variant="h3" mb={5}>
-        Loading.....
-      </Typography>
-    );
+  if (!product) return <NotFound />;
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>
