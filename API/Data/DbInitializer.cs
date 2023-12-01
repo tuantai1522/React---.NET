@@ -10,7 +10,7 @@ namespace API.Data
     {
         public static void Initializer(StoreContext db)
         {
-            if(db.Products.Any()) return;
+            if (db.Products.Any()) return;
 
             IEnumerable<Product> listProducts = new List<Product>
             {
@@ -193,7 +193,7 @@ namespace API.Data
                     QuantityInStock = 100
                 },
             };
-        
+
             foreach (var product in listProducts)
             {
                 db.Products.Add(product);

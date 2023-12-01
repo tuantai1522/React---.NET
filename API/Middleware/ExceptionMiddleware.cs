@@ -8,7 +8,7 @@ namespace API.Middleware
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
-        public ExceptionMiddleware(RequestDelegate next, 
+        public ExceptionMiddleware(RequestDelegate next,
         ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
         {
             _next = next;
@@ -18,9 +18,12 @@ namespace API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            try{
+            try
+            {
                 await _next(context);
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 500;
@@ -37,7 +40,7 @@ namespace API.Middleware
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
                 var json = JsonSerializer.Serialize(response, options);
-            
+
                 await context.Response.WriteAsync(json);
             }
         }

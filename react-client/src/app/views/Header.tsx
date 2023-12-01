@@ -5,10 +5,11 @@ import {
   Toolbar,
   Switch,
   Grid,
-  Link,
   IconButton,
   Badge,
+  Link,
 } from "@mui/material";
+import { useStoreContext } from "../context/StoreContext";
 
 interface Props {
   darkMode: boolean;
@@ -34,7 +35,12 @@ const rightLinks = [
   { title: "login", path: "/login" },
   { title: "register", path: "/register" },
 ];
+
 const Header = ({ darkMode, changeTheme }: Props) => {
+  const { cart } = useStoreContext();
+
+  const itemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <>
       <AppBar position="static">
@@ -47,7 +53,11 @@ const Header = ({ darkMode, changeTheme }: Props) => {
                 </Typography>
               </Link>
 
-              <Switch onChange={changeTheme} defaultChecked />
+              <Switch
+                checked={darkMode}
+                onChange={changeTheme}
+                defaultChecked
+              />
             </Grid>
             <Grid
               alignItems="center"
@@ -72,12 +82,13 @@ const Header = ({ darkMode, changeTheme }: Props) => {
               xs={4}
             >
               <IconButton
+                href="/cart"
                 size="large"
                 edge="start"
                 color="inherit"
                 sx={{ mr: 2 }}
               >
-                <Badge badgeContent="4" color="secondary">
+                <Badge badgeContent={itemCount} color="secondary">
                   <ShoppingCart />
                 </Badge>
               </IconButton>

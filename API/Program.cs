@@ -1,5 +1,6 @@
 using API.Data;
 using API.Middleware;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,9 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 builder.Services.AddCors();
 
@@ -32,13 +36,15 @@ if (app.Environment.IsDevelopment())
 }
 
 //to fix CORS policy
-app.UseCors(options => {
-    options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+app.UseCors(options =>
+{
+    options.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<StoreContext>();

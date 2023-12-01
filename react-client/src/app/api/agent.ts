@@ -1,14 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
-
-import { useNavigate } from "react-router-dom";
 import router from "../router/Routes";
+
 axios.defaults.baseURL = "http://localhost:5062/api/";
+axios.defaults.withCredentials = true;
 
 //to return data from response
 const responseBody = (response: AxiosResponse) => response.data;
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 2000));
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 500));
 
 axios.interceptors.response.use(
   async (res) => {
@@ -64,9 +64,19 @@ const TestErrors = {
   get500Error: () => requests.get("buggy/server-error"),
 };
 
+//Working with API
+const Cart = {
+  get: () => requests.get("Cart"),
+  addItem: (productId: number, quantity = 1) =>
+    requests.post(`Cart?productId=${productId}&quantity=${quantity}`, {}),
+  removeItem: (productId: number, quantity = 1) =>
+    requests.delete(`Cart?productId=${productId}&quantity=${quantity}`),
+};
+
 const agent = {
   Catalog,
   TestErrors,
+  Cart,
 };
 
 export default agent;

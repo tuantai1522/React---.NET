@@ -9,6 +9,7 @@ import LoginPage from "../../features/login/LoginPage";
 import RegisterPage from "../../features/register/RegisterPage";
 import ServerErrorPage from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
+import CartPage from "../../features/cart/CartPage";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "not-found",
         element: <NotFound />,
+      },
+      {
+        path: "/cart",
+        element: <CartPage />,
       },
       {
         path: "*",
