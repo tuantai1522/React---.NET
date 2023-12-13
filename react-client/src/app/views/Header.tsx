@@ -9,7 +9,8 @@ import {
   Badge,
   Link,
 } from "@mui/material";
-import { useStoreContext } from "../context/StoreContext";
+
+import { useAppDispatch, useAppSelector } from "../store/configureStore";
 
 interface Props {
   darkMode: boolean;
@@ -37,7 +38,7 @@ const rightLinks = [
 ];
 
 const Header = ({ darkMode, changeTheme }: Props) => {
-  const { cart } = useStoreContext();
+  const { cart } = useAppSelector((state) => state.cart);
 
   const itemCount = cart?.items.reduce((sum, item) => sum + item.quantity, 0);
 

@@ -12,13 +12,15 @@ import Footer from "./Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useStoreContext } from "../context/StoreContext";
 import agent from "../../app/api/agent";
 import LoadingComponent from "../../app/views/LoadingComponent";
 import { getCookie } from "../util/util";
+import { useAppDispatch, useAppSelector } from "../store/configureStore";
+import { setCart } from "../../features/cart/CartSlice";
 
 const App = () => {
-  const { setCart } = useStoreContext(); // use local variables
+  const dispatch = useAppDispatch();
+
   const [loading, setLoading] = useState(true);
 
   const [darkMode, setDarkMode] = useState(false);
@@ -30,13 +32,13 @@ const App = () => {
 
     if (customerId) {
       agent.Cart.get()
-        .then((cart) => setCart(cart))
+        .then((cart) => dispatch(setCart(cart)))
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
-  }, [setCart]);
+  }, [dispatch]);
 
   if (loading) return <LoadingComponent />;
 

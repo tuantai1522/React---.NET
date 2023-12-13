@@ -13,10 +13,10 @@ import {
 import { LoadingButton } from "@mui/lab";
 
 import { Product } from "../../app/models/product";
-import { useState } from "react";
-import agent from "../../app/api/agent";
 
-import { useStoreContext } from "../../app/context/StoreContext";
+import { currencyFormat } from "../../app/util/util";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { addItemIntoCartASync } from "../cart/CartSlice";
 
 // to define all properties or methods passed from father's component
 interface Props {
@@ -24,19 +24,8 @@ interface Props {
 }
 
 const ProductCard = ({ product }: Props) => {
-  const [loading, setLoading] = useState(false);
-  const { setCart } = useStoreContext();
-
-  const handleAddItem = (productId: number) => {
-    setLoading(true);
-
-    agent.Cart.addItem(productId)
-      .then((cart) => {
-        setCart(cart);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  };
+  const { status } = useAppSelector((state) => state.cart);
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -64,7 +53,7 @@ const ProductCard = ({ product }: Props) => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" color="secondary">
-            {(product.price / 100).toFixed(2)}
+            {currencyFormat(product.price)}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {product.type}
@@ -72,8 +61,10 @@ const ProductCard = ({ product }: Props) => {
         </CardContent>
         <CardActions>
           <LoadingButton
-            loading={loading}
-            onClick={() => handleAddItem(product.productId)}
+            loading={status.includes("pendingAddItem" + product.productId)}
+            onClick={() =>
+              dispatch(addItemIntoCartASync({ productId: product.productId }))
+            }
             size="small"
           >
             Add to cart

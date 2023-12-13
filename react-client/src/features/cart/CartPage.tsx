@@ -8,51 +8,27 @@ import {
   TableCell,
   TableBody,
   Box,
+  Grid,
+  Button,
 } from "@mui/material";
 
 import { Remove, Add, Delete } from "@mui/icons-material";
 
 import { LoadingButton } from "@mui/lab";
 
-import { useState, useEffect } from "react";
+import { currencyFormat } from "../../app/util/util";
 
-import agent from "../../app/api/agent";
-import LoadingComponent from "../../app/views/LoadingComponent";
+import { CartSummary } from "./CartSummary";
 
-import { getCookie } from "../../app/util/util";
-import { useStoreContext } from "../../app/context/StoreContext";
+import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { removeItemInCartAsync, addItemIntoCartASync } from "./CartSlice";
 
 const CartPage = () => {
-  const [status, setStatus] = useState({
-    loading: false,
-    name: "",
-  });
+  const dispatch = useAppDispatch();
+  const { cart, status } = useAppSelector((state) => state.cart);
 
-  const { cart, setCart, removeItem } = useStoreContext();
-
-  const handleRemoveItem = (
-    productId: number,
-    quantity: number = 1,
-    name: string
-  ) => {
-    setStatus({ loading: true, name });
-
-    agent.Cart.removeItem(productId, quantity)
-      .then(() => removeItem(productId, quantity))
-      .catch((err) => console.log(err))
-      .finally(() => setStatus({ loading: true, name: "" }));
-  };
-
-  const handleAddItem = (productId: number, name: string) => {
-    setStatus({ loading: true, name });
-
-    agent.Cart.addItem(productId)
-      .then((cart) => setCart(cart))
-      .catch((err) => console.log(err))
-      .finally(() => setStatus({ loading: true, name: "" }));
-  };
-
-  if (!cart)
+  if (!cart || cart.items.length == 0)
     return (
       <>
         <Typography variant="h2">Your cart is empty</Typography>
@@ -90,18 +66,20 @@ const CartPage = () => {
                     </Box>
                   </TableCell>
                   <TableCell align="right">
-                    ${(item.price / 100).toFixed(2)}
+                    {currencyFormat(item.price)}
                   </TableCell>
                   <TableCell align="center">
                     <LoadingButton
-                      loading={
-                        status.loading && status.name === "rem" + item.productId
-                      }
+                      loading={status.includes(
+                        "pendingRemoveItem" + item.productId + "minus"
+                      )}
                       onClick={() => {
-                        handleRemoveItem(
-                          item.productId,
-                          1,
-                          "rem" + item.productId
+                        dispatch(
+                          removeItemInCartAsync({
+                            productId: item.productId,
+                            quantity: 1,
+                            name: "minus",
+                          })
                         );
                       }}
                       color="error"
@@ -110,11 +88,16 @@ const CartPage = () => {
                     </LoadingButton>
                     {item.quantity}
                     <LoadingButton
-                      loading={
-                        status.loading && status.name === "add" + item.productId
-                      }
+                      loading={status.includes(
+                        "pendingAddItem" + item.productId
+                      )}
                       onClick={() => {
-                        handleAddItem(item.productId, "add" + item.productId);
+                        dispatch(
+                          addItemIntoCartASync({
+                            productId: item.productId,
+                            quantity: 1,
+                          })
+                        );
                       }}
                       color="secondary"
                     >
@@ -126,16 +109,18 @@ const CartPage = () => {
                   </TableCell>
                   <TableCell align="right">
                     <LoadingButton
-                      loading={
-                        status.loading && status.name === "del" + item.productId
+                      loading={status.includes(
+                        "pendingRemoveItem" + item.productId + "buttonRemove"
+                      )}
+                      onClick={() =>
+                        dispatch(
+                          removeItemInCartAsync({
+                            productId: item.productId,
+                            quantity: item.quantity,
+                            name: "buttonRemove",
+                          })
+                        )
                       }
-                      onClick={() => {
-                        handleRemoveItem(
-                          item.productId,
-                          item.quantity,
-                          "del" + item.productId
-                        );
-                      }}
                       color="error"
                     >
                       <Delete />
@@ -146,6 +131,21 @@ const CartPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Grid container>
+          <Grid item xs={6} />
+          <Grid item xs={6}>
+            <CartSummary />
+            <Button
+              component={Link}
+              to="/checkout"
+              variant="contained"
+              size="large"
+              fullWidth
+            >
+              Checkout
+            </Button>
+          </Grid>
+        </Grid>
       </>
     </>
   );
