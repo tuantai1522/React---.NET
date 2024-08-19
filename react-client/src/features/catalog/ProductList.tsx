@@ -11,15 +11,11 @@ const ProductList = ({ products }: Props) => {
   return (
     <>
       <Grid container spacing={4}>
-        {products.map((product) => {
-          return (
-            <>
-              <Grid item xs={4} key={product.productId}>
-                <ProductCard product={product} />
-              </Grid>
-            </>
-          );
-        })}
+        {products.map((product) => (
+          <Grid item xs={4} key={product.productId}>
+            <ProductCard product={product} />
+          </Grid>
+        ))}
       </Grid>
     </>
   );

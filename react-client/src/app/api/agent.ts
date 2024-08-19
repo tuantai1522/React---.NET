@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import router from "../router/Routes";
+import { URLSearchParams } from "url";
+import { PaginatedReponse } from "../models/pagination";
 
 axios.defaults.baseURL = "http://localhost:5062/api/";
 axios.defaults.withCredentials = true;
@@ -14,6 +16,11 @@ axios.interceptors.response.use(
   async (res) => {
     await sleep();
 
+    const pagination = res.headers["pagination"];
+    if (pagination) {
+      res.data = new PaginatedReponse(res.data, JSON.parse(pagination));
+      return res;
+    }
     return res;
   },
   (error: AxiosError) => {
@@ -42,7 +49,8 @@ axios.interceptors.response.use(
   }
 );
 const requests = {
-  get: (url: string) => axios.get(url).then(responseBody),
+  get: (url: string, params?: URLSearchParams) =>
+    axios.get(url, { params }).then(responseBody),
 
   //send data to server, it's in the body of request
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
@@ -52,8 +60,9 @@ const requests = {
 };
 
 const Catalog = {
-  list: () => requests.get("product"),
+  list: (params: URLSearchParams) => requests.get("product", params),
   details: (id: number) => requests.get(`product/${id}`),
+  filters: () => requests.get(`product/filters`),
 };
 
 const TestErrors = {
